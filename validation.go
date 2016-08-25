@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/cryptix/go/logging"
 	u "github.com/ipfs/go-ipfs-util"
 	key "github.com/ipfs/go-key"
 	ci "github.com/ipfs/go-libp2p-crypto"
+	logging "github.com/ipfs/go-log"
 	mh "github.com/jbenet/go-multihash"
 	pb "github.com/libp2p/go-libp2p-kad-dht/pb"
 )

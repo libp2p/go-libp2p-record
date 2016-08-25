@@ -4,8 +4,8 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/cryptix/go/logging"
 	key "github.com/ipfs/go-key"
+	logging "github.com/ipfs/go-log"
 )
 
 var log = logging.Logger("routing/record")
