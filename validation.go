@@ -4,14 +4,17 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"strings"
 
-	key "github.com/ipfs/go-ipfs/blocks/key"
-	path "github.com/ipfs/go-ipfs/path"
-	pb "github.com/ipfs/go-ipfs/routing/dht/pb"
-	ci "gx/ipfs/QmUWER4r4qMvaCnX5zREcfyiWN7cXN9g3a7fkRqNz8qWPP/go-libp2p-crypto"
-	mh "gx/ipfs/QmYf7ng2hG5XBtJA3tN34DQ2GUN5HNksEw1rLDkmr6vGku/go-multihash"
-	u "gx/ipfs/QmZNVWh8LLjAavuQ2JXuFmuYH3C11xo988vSgp7UQrTRj1/go-ipfs-util"
+	"github.com/cryptix/go/logging"
+	u "github.com/ipfs/go-ipfs-util"
+	key "github.com/ipfs/go-key"
+	ci "github.com/ipfs/go-libp2p-crypto"
+	mh "github.com/jbenet/go-multihash"
+	pb "github.com/libp2p/go-libp2p-kad-dht/pb"
 )
+
+var log = logging.Logger("routing/record")
 
 // ValidatorFunc is a function that is called to validate a given
 // type of DHTRecord.
@@ -39,7 +42,7 @@ type ValidChecker struct {
 // It runs needed validators
 func (v Validator) VerifyRecord(r *pb.Record) error {
 	// Now, check validity func
-	parts := path.SplitList(r.GetKey())
+	parts := strings.Split(r.GetKey(), "/")
 	if len(parts) < 3 {
 		log.Infof("Record key does not have validator: %s", key.Key(r.GetKey()))
 		return nil
@@ -56,7 +59,7 @@ func (v Validator) VerifyRecord(r *pb.Record) error {
 
 func (v Validator) IsSigned(k key.Key) (bool, error) {
 	// Now, check validity func
-	parts := path.SplitList(string(k))
+	parts := strings.Split(string(k), "/")
 	if len(parts) < 3 {
 		log.Infof("Record key does not have validator: %s", k)
 		return false, nil

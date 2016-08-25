@@ -1,0 +1,47 @@
+{
+  "bugs": {
+    "url": "https://github.com/libp2p/go-libp2p-record"
+  },
+  "gx": {
+    "dvcsimport": "github.com/libp2p/go-libp2p-record",
+    "goversion": "1.5.2"
+  },
+  "gxDependencies": [
+    {
+      "hash": "QmNQynaz7qfriSUJkiEZUrm2Wen1u3Kj9goZzWtrPyu7XR",
+      "name": "go-log",
+      "version": "1.1.2"
+    },
+    {
+      "author": "whyrusleeping",
+      "hash": "QmUWER4r4qMvaCnX5zREcfyiWN7cXN9g3a7fkRqNz8qWPP",
+      "name": "go-libp2p-crypto",
+      "version": "1.0.3"
+    },
+    {
+      "hash": "QmYf7ng2hG5XBtJA3tN34DQ2GUN5HNksEw1rLDkmr6vGku",
+      "name": "go-multihash",
+      "version": "0.0.0"
+    },
+    {
+      "hash": "QmZNVWh8LLjAavuQ2JXuFmuYH3C11xo988vSgp7UQrTRj1",
+      "name": "go-ipfs-util",
+      "version": "1.0.0"
+    },
+    {
+      "hash": "QmT9tw9haE1UjSYu51uUxQ8bEqefMdRLKJQcryBEAM7Zuq",
+      "name": "go-key",
+      "version": "1.0.0"
+    },
+    {
+      "hash": "QmSS5fXJLErnboqmkauLwRrEDAij2MEyvqcwgJ9fF5k2s2",
+      "name": "go-libp2p-kad-dht",
+      "version": "1.0.0"
+    }
+  ],
+  "gxVersion": "0.4.0",
+  "language": "go",
+  "license": "MIT",
+  "name": "go-libp2p-record",
+  "version": "0.0.0"
+}

@@ -3,12 +3,11 @@ package record
 import (
 	"bytes"
 
-	proto "gx/ipfs/QmZ4Qi3GaRbjcx28Sme5eMH7RQjGkt8wHxt2a65oLaeFEV/gogo-protobuf/proto"
-
-	key "github.com/ipfs/go-ipfs/blocks/key"
-	pb "github.com/ipfs/go-ipfs/routing/dht/pb"
-	logging "gx/ipfs/QmNQynaz7qfriSUJkiEZUrm2Wen1u3Kj9goZzWtrPyu7XR/go-log"
-	ci "gx/ipfs/QmUWER4r4qMvaCnX5zREcfyiWN7cXN9g3a7fkRqNz8qWPP/go-libp2p-crypto"
+	proto "github.com/gogo/protobuf/proto"
+	key "github.com/ipfs/go-key"
+	ci "github.com/ipfs/go-libp2p-crypto"
+	logging "github.com/ipfs/go-log"
+	pb "github.com/libp2p/go-libp2p-kad-dht/pb"
 )
 
 var log = logging.Logger("routing/record")

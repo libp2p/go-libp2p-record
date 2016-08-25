@@ -2,10 +2,13 @@ package record
 
 import (
 	"errors"
+	"strings"
 
-	key "github.com/ipfs/go-ipfs/blocks/key"
-	path "github.com/ipfs/go-ipfs/path"
+	"github.com/cryptix/go/logging"
+	key "github.com/ipfs/go-key"
 )
+
+var log = logging.Logger("routing/record")
 
 // A SelectorFunc selects the best value for the given key from
 // a slice of possible values and returns the index of the chosen one
@@ -18,7 +21,7 @@ func (s Selector) BestRecord(k key.Key, recs [][]byte) (int, error) {
 		return 0, errors.New("no records given!")
 	}
 
-	parts := path.SplitList(string(k))
+	parts := strings.Split((string(k)), "/")
 	if len(parts) < 3 {
 		log.Infof("Record key does not have selectorfunc: %s", k)
 		return 0, errors.New("record key does not have selectorfunc")
