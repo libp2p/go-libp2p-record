@@ -32,6 +32,11 @@
       "hash": "QmXhU58jbgCbuAvo3Eq6VXg67yGSNArpzJwk3g54NuYVfx",
       "name": "go-key",
       "version": "1.0.1"
+    },
+    {
+      "hash": "QmX5pTx4yuAzBX3UJegQL5KTrVSBsAXCfFjRLG165yufrX",
+      "name": "gogo-protobuf",
+      "version": "0.3.0"
     }
   ],
   "gxVersion": "0.4.0",
