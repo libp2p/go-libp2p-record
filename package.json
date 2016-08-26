@@ -32,11 +32,6 @@
       "hash": "QmT9tw9haE1UjSYu51uUxQ8bEqefMdRLKJQcryBEAM7Zuq",
       "name": "go-key",
       "version": "1.0.0"
-    },
-    {
-      "hash": "QmSS5fXJLErnboqmkauLwRrEDAij2MEyvqcwgJ9fF5k2s2",
-      "name": "go-libp2p-kad-dht",
-      "version": "1.0.0"
     }
   ],
   "gxVersion": "0.4.0",

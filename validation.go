@@ -11,7 +11,7 @@ import (
 	ci "github.com/ipfs/go-libp2p-crypto"
 	logging "github.com/ipfs/go-log"
 	mh "github.com/jbenet/go-multihash"
-	pb "github.com/libp2p/go-libp2p-kad-dht/pb"
+	pb "github.com/libp2p/go-libp2p-record/pb"
 )
 
 var log = logging.Logger("routing/record")
