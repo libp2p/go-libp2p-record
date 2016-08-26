@@ -5,10 +5,7 @@ import (
 	"strings"
 
 	key "github.com/ipfs/go-key"
-	logging "github.com/ipfs/go-log"
 )
-
-var log = logging.Logger("routing/record")
 
 // A SelectorFunc selects the best value for the given key from
 // a slice of possible values and returns the index of the chosen one

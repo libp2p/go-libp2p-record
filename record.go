@@ -6,11 +6,8 @@ import (
 	proto "github.com/gogo/protobuf/proto"
 	key "github.com/ipfs/go-key"
 	ci "github.com/ipfs/go-libp2p-crypto"
-	logging "github.com/ipfs/go-log"
 	pb "github.com/libp2p/go-libp2p-record/pb"
 )
-
-var log = logging.Logger("routing/record")
 
 // MakePutRecord creates and signs a dht record for the given key/value pair
 func MakePutRecord(sk ci.PrivKey, key key.Key, value []byte, sign bool) (*pb.Record, error) {
