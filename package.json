@@ -34,9 +34,9 @@
       "version": "1.0.1"
     },
     {
-      "hash": "QmX5pTx4yuAzBX3UJegQL5KTrVSBsAXCfFjRLG165yufrX",
+      "hash": "QmZ4Qi3GaRbjcx28Sme5eMH7RQjGkt8wHxt2a65oLaeFEV",
       "name": "gogo-protobuf",
-      "version": "0.3.0"
+      "version": "0.0.0"
     }
   ],
   "gxVersion": "0.4.0",
