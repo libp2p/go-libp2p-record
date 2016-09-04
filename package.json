@@ -8,15 +8,15 @@
   },
   "gxDependencies": [
     {
-      "hash": "QmNQynaz7qfriSUJkiEZUrm2Wen1u3Kj9goZzWtrPyu7XR",
+      "hash": "QmSpJByNKFX1sCsHBEp3R73FL4NF6FnQTEGyNAXHm2GS52",
       "name": "go-log",
-      "version": "1.1.2"
+      "version": "1.2.0"
     },
     {
       "author": "whyrusleeping",
-      "hash": "QmUWER4r4qMvaCnX5zREcfyiWN7cXN9g3a7fkRqNz8qWPP",
+      "hash": "QmVoi5es8D5fNHZDqoW6DgDAEPEV5hQp8GBz161vZXiwpQ",
       "name": "go-libp2p-crypto",
-      "version": "1.0.3"
+      "version": "1.0.4"
     },
     {
       "hash": "QmYf7ng2hG5XBtJA3tN34DQ2GUN5HNksEw1rLDkmr6vGku",
@@ -29,19 +29,19 @@
       "version": "1.0.0"
     },
     {
-      "hash": "QmXhU58jbgCbuAvo3Eq6VXg67yGSNArpzJwk3g54NuYVfx",
+      "hash": "Qmce4Y4zg3sYr7xKM5UueS67vhNni6EeWgCRnb7MbLJMew",
       "name": "go-key",
-      "version": "1.0.1"
+      "version": "1.0.2"
     },
     {
-      "hash": "QmX5pTx4yuAzBX3UJegQL5KTrVSBsAXCfFjRLG165yufrX",
+      "hash": "QmZ4Qi3GaRbjcx28Sme5eMH7RQjGkt8wHxt2a65oLaeFEV",
       "name": "gogo-protobuf",
-      "version": "0.3.0"
+      "version": "0.0.0"
     }
   ],
   "gxVersion": "0.4.0",
   "language": "go",
   "license": "MIT",
   "name": "go-libp2p-record",
-  "version": "1.0.0"
+  "version": "1.0.1"
 }
