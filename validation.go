@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	u "github.com/ipfs/go-ipfs-util"
-	key "github.com/ipfs/go-key"
 	ci "github.com/ipfs/go-libp2p-crypto"
 	logging "github.com/ipfs/go-log"
 	mh "github.com/jbenet/go-multihash"
@@ -18,7 +17,7 @@ var log = logging.Logger("routing/record")
 
 // ValidatorFunc is a function that is called to validate a given
 // type of DHTRecord.
-type ValidatorFunc func(key.Key, []byte) error
+type ValidatorFunc func(string, []byte) error
 
 // ErrBadRecord is returned any time a dht record is found to be
 // incorrectly formatted or signed.
@@ -44,7 +43,7 @@ func (v Validator) VerifyRecord(r *pb.Record) error {
 	// Now, check validity func
 	parts := strings.Split(r.GetKey(), "/")
 	if len(parts) < 3 {
-		log.Infof("Record key does not have validator: %s", key.Key(r.GetKey()))
+		log.Infof("Record key does not have validator: %s", r.GetKey())
 		return nil
 	}
 
@@ -54,12 +53,12 @@ func (v Validator) VerifyRecord(r *pb.Record) error {
 		return ErrInvalidRecordType
 	}
 
-	return val.Func(key.Key(r.GetKey()), r.GetValue())
+	return val.Func(r.GetKey(), r.GetValue())
 }
 
-func (v Validator) IsSigned(k key.Key) (bool, error) {
+func (v Validator) IsSigned(k string) (bool, error) {
 	// Now, check validity func
-	parts := strings.Split(string(k), "/")
+	parts := strings.Split(k, "/")
 	if len(parts) < 3 {
 		log.Infof("Record key does not have validator: %s", k)
 		return false, nil
@@ -77,12 +76,12 @@ func (v Validator) IsSigned(k key.Key) (bool, error) {
 // ValidatePublicKeyRecord implements ValidatorFunc and
 // verifies that the passed in record value is the PublicKey
 // that matches the passed in key.
-func ValidatePublicKeyRecord(k key.Key, val []byte) error {
+func ValidatePublicKeyRecord(k string, val []byte) error {
 	if len(k) < 5 {
 		return errors.New("invalid public key record key")
 	}
 
-	prefix := string(k[:4])
+	prefix := k[:4]
 	if prefix != "/pk/" {
 		return errors.New("key was not prefixed with /pk/")
 	}

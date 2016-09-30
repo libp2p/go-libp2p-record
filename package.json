@@ -29,11 +29,6 @@
       "version": "1.0.0"
     },
     {
-      "hash": "Qmce4Y4zg3sYr7xKM5UueS67vhNni6EeWgCRnb7MbLJMew",
-      "name": "go-key",
-      "version": "1.0.2"
-    },
-    {
       "hash": "QmZ4Qi3GaRbjcx28Sme5eMH7RQjGkt8wHxt2a65oLaeFEV",
       "name": "gogo-protobuf",
       "version": "0.0.0"
