@@ -7,10 +7,10 @@ import (
 	"strings"
 
 	u "github.com/ipfs/go-ipfs-util"
-	ci "github.com/ipfs/go-libp2p-crypto"
 	logging "github.com/ipfs/go-log"
-	mh "github.com/jbenet/go-multihash"
+	ci "github.com/libp2p/go-libp2p-crypto"
 	pb "github.com/libp2p/go-libp2p-record/pb"
+	mh "github.com/multiformats/go-multihash"
 )
 
 var log = logging.Logger("routing/record")
