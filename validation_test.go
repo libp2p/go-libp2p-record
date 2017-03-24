@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"testing"
 
+	u "github.com/ipfs/go-ipfs-util"
 	ci "github.com/libp2p/go-libp2p-crypto"
 )
 
@@ -20,10 +21,12 @@ func TestValidatePublicKey(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	pkh, err := pubk.Hash()
+	pkb2, err := pubk.Bytes()
 	if err != nil {
 		t.Fatal(err)
 	}
+
+	pkh := u.Hash(pkb2)
 
 	k := "/pk/" + string(pkh)
 

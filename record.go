@@ -4,6 +4,7 @@ import (
 	"bytes"
 
 	proto "github.com/gogo/protobuf/proto"
+	u "github.com/ipfs/go-ipfs-util"
 	ci "github.com/libp2p/go-libp2p-crypto"
 	pb "github.com/libp2p/go-libp2p-record/pb"
 )
@@ -15,10 +16,12 @@ func MakePutRecord(sk ci.PrivKey, key string, value []byte, sign bool) (*pb.Reco
 	record.Key = proto.String(string(key))
 	record.Value = value
 
-	pkh, err := sk.GetPublic().Hash()
+	pkb, err := sk.GetPublic().Bytes()
 	if err != nil {
 		return nil, err
 	}
+
+	pkh := u.Hash(pkb)
 
 	record.Author = proto.String(string(pkh))
 	if sign {
