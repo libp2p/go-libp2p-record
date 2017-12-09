@@ -3,7 +3,6 @@ package record
 import (
 	"bytes"
 
-	proto "github.com/gogo/protobuf/proto"
 	u "github.com/ipfs/go-ipfs-util"
 	ci "github.com/libp2p/go-libp2p-crypto"
 	pb "github.com/libp2p/go-libp2p-record/pb"
@@ -13,7 +12,7 @@ import (
 func MakePutRecord(sk ci.PrivKey, key string, value []byte, sign bool) (*pb.Record, error) {
 	record := new(pb.Record)
 
-	record.Key = proto.String(string(key))
+	record.Key = string(key)
 	record.Value = value
 
 	pkb, err := sk.GetPublic().Bytes()
@@ -23,7 +22,7 @@ func MakePutRecord(sk ci.PrivKey, key string, value []byte, sign bool) (*pb.Reco
 
 	pkh := u.Hash(pkb)
 
-	record.Author = proto.String(string(pkh))
+	record.Author = string(pkh)
 	if sign {
 		blob := RecordBlobForSig(record)
 

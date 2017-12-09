@@ -14,9 +14,9 @@
     },
     {
       "author": "whyrusleeping",
-      "hash": "QmaPbCnUMBohSGo3KnxEa2bHqyJVVeEEcwtqJAYxerieBo",
+      "hash": "QmQ8QS9wQZeGHxfvjdmP8c9swGfpPCSHg4eLA6snWaR8fa",
       "name": "go-libp2p-crypto",
-      "version": "1.5.0"
+      "version": "1.6.0"
     },
     {
       "hash": "QmYeKnKpubCMRiq3PGZcTREErthbb5Q9cXsCoSkD9bjEBd",
@@ -29,7 +29,7 @@
       "version": "1.2.6"
     },
     {
-      "hash": "QmZ4Qi3GaRbjcx28Sme5eMH7RQjGkt8wHxt2a65oLaeFEV",
+      "hash": "QmVygcBKZdEdLJf77cd7AhkLJG8PqKBrf4ePoWVEf4sqRs",
       "name": "gogo-protobuf",
       "version": "0.0.0"
     }
