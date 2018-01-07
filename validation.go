@@ -2,6 +2,7 @@ package record
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"fmt"
 	"strings"
@@ -17,7 +18,7 @@ var log = logging.Logger("routing/record")
 
 // ValidatorFunc is a function that is called to validate a given
 // type of DHTRecord.
-type ValidatorFunc func(string, []byte) error
+type ValidatorFunc func(context.Context, *pb.Record) error
 
 // ErrBadRecord is returned any time a dht record is found to be
 // incorrectly formatted or signed.
@@ -39,7 +40,7 @@ type ValidChecker struct {
 
 // VerifyRecord checks a record and ensures it is still valid.
 // It runs needed validators
-func (v Validator) VerifyRecord(r *pb.Record) error {
+func (v Validator) VerifyRecord(ctx context.Context, r *pb.Record) error {
 	// Now, check validity func
 	parts := strings.Split(r.GetKey(), "/")
 	if len(parts) < 3 {
@@ -53,7 +54,7 @@ func (v Validator) VerifyRecord(r *pb.Record) error {
 		return ErrInvalidRecordType
 	}
 
-	return val.Func(r.GetKey(), r.GetValue())
+	return val.Func(ctx, r)
 }
 
 func (v Validator) IsSigned(k string) (bool, error) {
@@ -76,7 +77,10 @@ func (v Validator) IsSigned(k string) (bool, error) {
 // ValidatePublicKeyRecord implements ValidatorFunc and
 // verifies that the passed in record value is the PublicKey
 // that matches the passed in key.
-func ValidatePublicKeyRecord(k string, val []byte) error {
+func ValidatePublicKeyRecord(ctx context.Context, r *pb.Record) error {
+	k := r.GetKey()
+	val := r.GetValue()
+
 	if len(k) < 5 {
 		return errors.New("invalid public key record key")
 	}
