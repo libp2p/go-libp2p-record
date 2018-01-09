@@ -59,7 +59,9 @@ type ValidChecker struct {
 }
 
 // VerifyRecord checks a record and ensures it is still valid.
-// It runs needed validators
+// It runs needed validators.
+// Note that VerifyRecord does not perform signature verification,
+// the signature must be verified by the caller.
 func (v Validator) VerifyRecord(r *pb.Record) error {
 	// Now, check validity func
 	parts := strings.Split(r.GetKey(), "/")
@@ -74,6 +76,8 @@ func (v Validator) VerifyRecord(r *pb.Record) error {
 		return ErrInvalidRecordType
 	}
 
+	// Note that the caller is responsible for verifying the
+	// signature
 	author := peer.ID("")
 	if len(r.GetSignature()) > 0 {
 		pid, err := peer.IDFromString(r.GetAuthor())
