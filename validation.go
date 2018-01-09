@@ -27,7 +27,7 @@ var ErrInvalidRecordType = errors.New("invalid record keytype")
 type ValidationRecord struct {
   key string
   value []byte
-  author *peer.ID
+  author peer.ID
 }
 
 func (r *ValidationRecord) GetKey() string {
@@ -39,7 +39,8 @@ func (r *ValidationRecord) GetValue() []byte {
 }
 
 // Note: author is only present if the source record is signed
-func (r *ValidationRecord) GetAuthor() *peer.ID {
+// Otherwise it will be ""
+func (r *ValidationRecord) GetAuthor() peer.ID {
 	return r.author
 }
 
@@ -73,14 +74,14 @@ func (v Validator) VerifyRecord(r *pb.Record) error {
 		return ErrInvalidRecordType
 	}
 
-	var author *peer.ID
+	author := peer.ID("")
 	if len(r.GetSignature()) > 0 {
 		pid, err := peer.IDFromString(r.GetAuthor())
 		if err != nil {
 			log.Warningf("Could not parse author to peer ID: %s", r.GetAuthor())
 			return ErrInvalidRecordType
 		}
-		author = &pid
+		author = pid
 	}
 	vr := &ValidationRecord{
 		key: r.GetKey(),

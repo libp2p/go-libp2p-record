@@ -37,7 +37,7 @@ func TestValidatePublicKey(t *testing.T) {
 	k := "/pk/" + string(pkh)
 
 	// Good public key should pass
-	good := &ValidationRecord{k, pkb, &id}
+	good := &ValidationRecord{k, pkb, id}
 	err = ValidatePublicKeyRecord(good)
 	if err != nil {
 		t.Fatal(err)
@@ -45,7 +45,7 @@ func TestValidatePublicKey(t *testing.T) {
 
 	// Bad key format should fail
 	var badf = "/aa/" + string(pkh)
-	badr1 := &ValidationRecord{badf, pkb, &id}
+	badr1 := &ValidationRecord{badf, pkb, id}
 	err = ValidatePublicKeyRecord(badr1)
 	if err == nil {
 		t.Fatal("Failed to detect bad prefix")
@@ -53,7 +53,7 @@ func TestValidatePublicKey(t *testing.T) {
 
 	// Bad key hash should fail
 	var badk = "/pk/" + strings.Repeat("A", len(pkh))
-	badr2 := &ValidationRecord{badk, pkb, &id}
+	badr2 := &ValidationRecord{badk, pkb, id}
 	err = ValidatePublicKeyRecord(badr2)
 	if err == nil {
 		t.Fatal("Failed to detect bad public key hash")
@@ -61,7 +61,7 @@ func TestValidatePublicKey(t *testing.T) {
 
 	// Bad public key should fail
 	pkb[0] = 'A'
-	badr3 := &ValidationRecord{k, pkb, &id}
+	badr3 := &ValidationRecord{k, pkb, id}
 	err = ValidatePublicKeyRecord(badr3)
 	if err == nil {
 		t.Fatal("Failed to detect bad public key data")
