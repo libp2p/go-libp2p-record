@@ -77,7 +77,7 @@ func (v Validator) VerifyRecord(r *pb.Record) error {
 	if len(r.GetSignature()) > 0 {
 		pid, err := peer.IDFromString(r.GetAuthor())
 		if err != nil {
-fmt.Printf("Could not parse author to peer ID: %s\n", r.GetAuthor())
+			log.Warningf("Could not parse author to peer ID: %s", r.GetAuthor())
 			return ErrInvalidRecordType
 		}
 		author = &pid
