@@ -122,4 +122,9 @@ func TestVerifyRecordSigned(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
+	err = CheckRecordSig(r, pubk)
+	if err != nil {
+		t.Fatal(err)
+	}
 }
