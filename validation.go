@@ -8,16 +8,13 @@ import (
 
 	u "github.com/ipfs/go-ipfs-util"
 	logging "github.com/ipfs/go-log"
+	peer "github.com/libp2p/go-libp2p-peer"
 	ci "github.com/libp2p/go-libp2p-crypto"
 	pb "github.com/libp2p/go-libp2p-record/pb"
 	mh "github.com/multiformats/go-multihash"
 )
 
 var log = logging.Logger("routing/record")
-
-// ValidatorFunc is a function that is called to validate a given
-// type of DHTRecord.
-type ValidatorFunc func(string, []byte) error
 
 // ErrBadRecord is returned any time a dht record is found to be
 // incorrectly formatted or signed.
@@ -26,6 +23,30 @@ var ErrBadRecord = errors.New("bad dht record")
 // ErrInvalidRecordType is returned if a DHTRecord keys prefix
 // is not found in the Validator map of the DHT.
 var ErrInvalidRecordType = errors.New("invalid record keytype")
+
+type ValidationRecord struct {
+  key string
+  value []byte
+  author peer.ID
+}
+
+func (r *ValidationRecord) GetKey() string {
+	return r.key
+}
+
+func (r *ValidationRecord) GetValue() []byte {
+	return r.value
+}
+
+// Note: author is only present if the source record is signed
+// Otherwise it will be ""
+func (r *ValidationRecord) GetAuthor() peer.ID {
+	return r.author
+}
+
+// ValidatorFunc is a function that is called to validate a given
+// type of DHTRecord.
+type ValidatorFunc func(*ValidationRecord) error
 
 // Validator is an object that helps ensure routing records are valid.
 // It is a collection of validator functions, each of which implements
@@ -38,7 +59,9 @@ type ValidChecker struct {
 }
 
 // VerifyRecord checks a record and ensures it is still valid.
-// It runs needed validators
+// It runs needed validators.
+// Note that VerifyRecord does not perform signature verification,
+// the signature must be verified by the caller.
 func (v Validator) VerifyRecord(r *pb.Record) error {
 	// Now, check validity func
 	parts := strings.Split(r.GetKey(), "/")
@@ -53,7 +76,23 @@ func (v Validator) VerifyRecord(r *pb.Record) error {
 		return ErrInvalidRecordType
 	}
 
-	return val.Func(r.GetKey(), r.GetValue())
+	// Note that the caller is responsible for verifying the
+	// signature
+	author := peer.ID("")
+	if len(r.GetSignature()) > 0 {
+		pid, err := peer.IDFromString(r.GetAuthor())
+		if err != nil {
+			log.Warningf("Could not parse author to peer ID: %s", r.GetAuthor())
+			return ErrInvalidRecordType
+		}
+		author = pid
+	}
+	vr := &ValidationRecord{
+		key: r.GetKey(),
+		value: r.GetValue(),
+		author: author,
+	}
+	return val.Func(vr)
 }
 
 func (v Validator) IsSigned(k string) (bool, error) {
@@ -76,7 +115,10 @@ func (v Validator) IsSigned(k string) (bool, error) {
 // ValidatePublicKeyRecord implements ValidatorFunc and
 // verifies that the passed in record value is the PublicKey
 // that matches the passed in key.
-func ValidatePublicKeyRecord(k string, val []byte) error {
+func ValidatePublicKeyRecord(r *ValidationRecord) error {
+	k := r.GetKey()
+	val := r.GetValue()
+
 	if len(k) < 5 {
 		return errors.New("invalid public key record key")
 	}
