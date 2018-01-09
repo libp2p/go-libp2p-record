@@ -2,7 +2,6 @@ package record
 
 import (
 	"encoding/base64"
-	"context"
 	"testing"
 
 	proto "github.com/gogo/protobuf/proto"
@@ -38,7 +37,7 @@ func TestValidatePublicKey(t *testing.T) {
 	record.Value = pkb
 	record.Author = proto.String(string(pkh))
 
-	err = ValidatePublicKeyRecord(context.Background(), record)
+	err = ValidatePublicKeyRecord(record)
 	if err != nil {
 		t.Fatal(err)
 	}
