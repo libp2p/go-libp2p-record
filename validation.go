@@ -8,8 +8,8 @@ import (
 
 	u "github.com/ipfs/go-ipfs-util"
 	logging "github.com/ipfs/go-log"
-	peer "github.com/libp2p/go-libp2p-peer"
 	ci "github.com/libp2p/go-libp2p-crypto"
+	peer "github.com/libp2p/go-libp2p-peer"
 	pb "github.com/libp2p/go-libp2p-record/pb"
 	mh "github.com/multiformats/go-multihash"
 )
@@ -25,23 +25,11 @@ var ErrBadRecord = errors.New("bad dht record")
 var ErrInvalidRecordType = errors.New("invalid record keytype")
 
 type ValidationRecord struct {
-  key string
-  value []byte
-  author peer.ID
-}
-
-func (r *ValidationRecord) GetKey() string {
-	return r.key
-}
-
-func (r *ValidationRecord) GetValue() []byte {
-	return r.value
-}
-
-// Note: author is only present if the source record is signed
-// Otherwise it will be ""
-func (r *ValidationRecord) GetAuthor() peer.ID {
-	return r.author
+	Key   string
+	Value []byte
+	// Note: author is only present if the source record is signed
+	// Otherwise it will be ""
+	Author peer.ID
 }
 
 // ValidatorFunc is a function that is called to validate a given
@@ -88,9 +76,9 @@ func (v Validator) VerifyRecord(r *pb.Record) error {
 		author = pid
 	}
 	vr := &ValidationRecord{
-		key: r.GetKey(),
-		value: r.GetValue(),
-		author: author,
+		Key:    r.GetKey(),
+		Value:  r.GetValue(),
+		Author: author,
 	}
 	return val.Func(vr)
 }
@@ -116,24 +104,21 @@ func (v Validator) IsSigned(k string) (bool, error) {
 // verifies that the passed in record value is the PublicKey
 // that matches the passed in key.
 func ValidatePublicKeyRecord(r *ValidationRecord) error {
-	k := r.GetKey()
-	val := r.GetValue()
-
-	if len(k) < 5 {
+	if len(r.Key) < 5 {
 		return errors.New("invalid public key record key")
 	}
 
-	prefix := k[:4]
+	prefix := r.Key[:4]
 	if prefix != "/pk/" {
 		return errors.New("key was not prefixed with /pk/")
 	}
 
-	keyhash := []byte(k[4:])
+	keyhash := []byte(r.Key[4:])
 	if _, err := mh.Cast(keyhash); err != nil {
 		return fmt.Errorf("key did not contain valid multihash: %s", err)
 	}
 
-	pkh := u.Hash(val)
+	pkh := u.Hash(r.Value)
 	if !bytes.Equal(keyhash, pkh) {
 		return errors.New("public key does not match storage key")
 	}
