@@ -132,11 +132,7 @@ var PublicKeyValidator = &ValidChecker{
 
 func CheckRecordSig(r *pb.Record, pk ci.PubKey) error {
 	blob := RecordBlobForSig(r)
-	good, err := pk.Verify(blob, r.Signature)
-	if err != nil {
-		return err
-	}
-	if !good {
+	if good, err := pk.Verify(blob, r.Signature); err != nil || !good {
 		return errors.New("invalid record signature")
 	}
 	return nil
