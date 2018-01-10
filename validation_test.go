@@ -7,12 +7,22 @@ import (
 
 	u "github.com/ipfs/go-ipfs-util"
 	ci "github.com/libp2p/go-libp2p-crypto"
-	peer "github.com/libp2p/go-libp2p-peer"
 )
 
 var OffensiveKey = "CAASXjBcMA0GCSqGSIb3DQEBAQUAA0sAMEgCQQDjXAQQMal4SB2tSnX6NJIPmC69/BT8A8jc7/gDUZNkEhdhYHvc7k7S4vntV/c92nJGxNdop9fKJyevuNMuXhhHAgMBAAE="
 
+func validatePk(k string, pkb []byte) error {
+	ns, k, err := splitPath(k)
+	if err != nil {
+		return err
+	}
+
+	r := &ValidationRecord{Namespace: ns, Key: k, Value: pkb}
+	return ValidatePublicKeyRecord(r)
+}
+
 func TestValidatePublicKey(t *testing.T) {
+
 	pkb, err := base64.StdEncoding.DecodeString(OffensiveKey)
 	if err != nil {
 		t.Fatal(err)
@@ -28,42 +38,29 @@ func TestValidatePublicKey(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	id, err := peer.IDFromPublicKey(pubk)
-	if err != nil {
-		t.Fatal(err)
-	}
-
 	pkh := u.Hash(pkb2)
 	k := "/pk/" + string(pkh)
 
 	// Good public key should pass
-	good := &ValidationRecord{k, pkb, id}
-	err = ValidatePublicKeyRecord(good)
-	if err != nil {
+	if err := validatePk(k, pkb); err != nil {
 		t.Fatal(err)
 	}
 
 	// Bad key format should fail
 	var badf = "/aa/" + string(pkh)
-	badr1 := &ValidationRecord{badf, pkb, id}
-	err = ValidatePublicKeyRecord(badr1)
-	if err == nil {
+	if err := validatePk(badf, pkb); err == nil {
 		t.Fatal("Failed to detect bad prefix")
 	}
 
 	// Bad key hash should fail
 	var badk = "/pk/" + strings.Repeat("A", len(pkh))
-	badr2 := &ValidationRecord{badk, pkb, id}
-	err = ValidatePublicKeyRecord(badr2)
-	if err == nil {
+	if err := validatePk(badk, pkb); err == nil {
 		t.Fatal("Failed to detect bad public key hash")
 	}
 
 	// Bad public key should fail
 	pkb[0] = 'A'
-	badr3 := &ValidationRecord{k, pkb, id}
-	err = ValidatePublicKeyRecord(badr3)
-	if err == nil {
+	if err := validatePk(k, pkb); err == nil {
 		t.Fatal("Failed to detect bad public key data")
 	}
 }

@@ -25,8 +25,9 @@ var ErrBadRecord = errors.New("bad dht record")
 var ErrInvalidRecordType = errors.New("invalid record keytype")
 
 type ValidationRecord struct {
-	Key   string
-	Value []byte
+	Namespace string
+	Key       string
+	Value     []byte
 	// Note: author is only present if the source record is signed
 	// Otherwise it will be ""
 	Author peer.ID
@@ -46,22 +47,25 @@ type ValidChecker struct {
 	Sign bool
 }
 
-// VerifyRecord checks a record and ensures it is still valid.
-// It runs needed validators.
-// Note that VerifyRecord does not perform signature verification,
-// the signature must be verified by the caller.
-func (v Validator) VerifyRecord(r *pb.Record) error {
-	// Now, check validity func
-	parts := strings.Split(r.GetKey(), "/")
-	if len(parts) < 3 {
-		log.Infof("Record key does not have validator: %s", r.GetKey())
-		return nil
+func splitPath(key string) (string, string, error) {
+	if len(key) == 0 || key[0] != '/' {
+		return "", "", ErrInvalidRecordType
 	}
 
-	val, ok := v[parts[1]]
-	if !ok {
-		log.Infof("Unrecognized key prefix: %s", parts[1])
-		return ErrInvalidRecordType
+	key = key[1:]
+
+	i := strings.IndexByte(key, '/')
+	if i <= 0 {
+		return "", "", ErrInvalidRecordType
+	}
+
+	return key[:i], key[i+1:], nil
+}
+
+func parseRecord(r *pb.Record) (*ValidationRecord, error) {
+	namespace, key, err := splitPath(r.GetKey())
+	if err != nil {
+		return nil, err
 	}
 
 	// Note that the caller is responsible for verifying the
@@ -71,29 +75,44 @@ func (v Validator) VerifyRecord(r *pb.Record) error {
 		pid, err := peer.IDFromString(r.GetAuthor())
 		if err != nil {
 			log.Warningf("Could not parse author to peer ID: %s", r.GetAuthor())
-			return ErrInvalidRecordType
+			return nil, ErrInvalidRecordType
 		}
 		author = pid
 	}
-	vr := &ValidationRecord{
-		Key:    r.GetKey(),
-		Value:  r.GetValue(),
-		Author: author,
+	return &ValidationRecord{
+		Namespace: namespace,
+		Key:       key,
+		Value:     r.GetValue(),
+		Author:    author,
+	}, nil
+}
+
+// VerifyRecord checks a record and ensures it is still valid.
+// It runs needed validators.
+// Note that VerifyRecord does not perform signature verification,
+// the signature must be verified by the caller.
+func (v Validator) VerifyRecord(r *pb.Record) error {
+	vr, err := parseRecord(r)
+	if err != nil {
+		return err
+	}
+	val, ok := v[vr.Namespace]
+	if !ok {
+		log.Infof("Unrecognized key prefix: %s", vr.Namespace)
+		return ErrInvalidRecordType
 	}
 	return val.Func(vr)
 }
 
 func (v Validator) IsSigned(k string) (bool, error) {
-	// Now, check validity func
-	parts := strings.Split(k, "/")
-	if len(parts) < 3 {
-		log.Infof("Record key does not have validator: %s", k)
-		return false, nil
+	namespace, _, err := splitPath(k)
+	if err != nil {
+		return false, err
 	}
 
-	val, ok := v[parts[1]]
+	val, ok := v[namespace]
 	if !ok {
-		log.Infof("Unrecognized key prefix: %s", parts[1])
+		log.Infof("Unrecognized key prefix: %s", namespace)
 		return false, ErrInvalidRecordType
 	}
 
@@ -104,16 +123,11 @@ func (v Validator) IsSigned(k string) (bool, error) {
 // verifies that the passed in record value is the PublicKey
 // that matches the passed in key.
 func ValidatePublicKeyRecord(r *ValidationRecord) error {
-	if len(r.Key) < 5 {
-		return errors.New("invalid public key record key")
+	if r.Namespace != "pk" {
+		return errors.New("namespace not 'pk'")
 	}
 
-	prefix := r.Key[:4]
-	if prefix != "/pk/" {
-		return errors.New("key was not prefixed with /pk/")
-	}
-
-	keyhash := []byte(r.Key[4:])
+	keyhash := []byte(r.Key)
 	if _, err := mh.Cast(keyhash); err != nil {
 		return fmt.Errorf("key did not contain valid multihash: %s", err)
 	}
