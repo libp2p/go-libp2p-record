@@ -5,11 +5,24 @@ import (
 	"strings"
 	"testing"
 
+	proto "github.com/gogo/protobuf/proto"
 	u "github.com/ipfs/go-ipfs-util"
 	ci "github.com/libp2p/go-libp2p-crypto"
 )
 
 var OffensiveKey = "CAASXjBcMA0GCSqGSIb3DQEBAQUAA0sAMEgCQQDjXAQQMal4SB2tSnX6NJIPmC69/BT8A8jc7/gDUZNkEhdhYHvc7k7S4vntV/c92nJGxNdop9fKJyevuNMuXhhHAgMBAAE="
+
+var badPaths = []string{
+	"foo/bar/baz",
+	"//foo/bar/baz",
+	"/ns",
+	"ns",
+	"ns/",
+	"",
+	"//",
+	"/",
+	"////",
+}
 
 func TestSplitPath(t *testing.T) {
 	ns, key, err := splitPath("/foo/bar/baz")
@@ -34,17 +47,7 @@ func TestSplitPath(t *testing.T) {
 		t.Errorf("wrong key: %s", key)
 	}
 
-	for _, badP := range []string{
-		"foo/bar/baz",
-		"//foo/bar/baz",
-		"/ns",
-		"ns",
-		"ns/",
-		"",
-		"//",
-		"/",
-		"////",
-	} {
+	for _, badP := range badPaths {
 		_, _, err := splitPath(badP)
 		if err == nil {
 			t.Errorf("expected error for bad path: %s", badP)
@@ -81,6 +84,64 @@ func TestIsSigned(t *testing.T) {
 	_, err = v.IsSigned("bd")
 	if err == nil {
 		t.Error("expected bad ns to return an error")
+	}
+}
+
+func TestBadRecords(t *testing.T) {
+	v := Validator{
+		"pk": PublicKeyValidator,
+	}
+
+	sr := u.NewSeededRand(15) // generate deterministic keypair
+	sk, pubk, err := ci.GenerateKeyPairWithReader(ci.RSA, 1024, sr)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	pkb, err := pubk.Bytes()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	for _, badP := range badPaths {
+		r, err := MakePutRecord(sk, badP, pkb, true)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if v.VerifyRecord(r) == nil {
+			t.Errorf("expected error for path: %s", badP)
+		}
+	}
+
+	// Test missing namespace
+	r, err := MakePutRecord(sk, "/missing/ns", pkb, true)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if v.VerifyRecord(r) == nil {
+		t.Error("expected error for missing namespace 'missing'")
+	}
+
+	// Test valid namespace
+	pkh := u.Hash(pkb)
+	k := "/pk/" + string(pkh)
+
+	r, err = MakePutRecord(sk, k, pkb, true)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Sanity test.
+	err = v.VerifyRecord(r)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Test invalid author error path
+	r.Author = proto.String("bla")
+	err = v.VerifyRecord(r)
+	if err == nil {
+		t.Errorf("expected error due to bad author field")
 	}
 }
 
