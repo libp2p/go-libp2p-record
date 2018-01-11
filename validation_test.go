@@ -11,6 +11,47 @@ import (
 
 var OffensiveKey = "CAASXjBcMA0GCSqGSIb3DQEBAQUAA0sAMEgCQQDjXAQQMal4SB2tSnX6NJIPmC69/BT8A8jc7/gDUZNkEhdhYHvc7k7S4vntV/c92nJGxNdop9fKJyevuNMuXhhHAgMBAAE="
 
+func TestSplitPath(t *testing.T) {
+	ns, key, err := splitPath("/foo/bar/baz")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if ns != "foo" {
+		t.Errorf("wrong namespace: %s", ns)
+	}
+	if key != "bar/baz" {
+		t.Errorf("wrong key: %s", key)
+	}
+
+	ns, key, err = splitPath("/foo/bar")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if ns != "foo" {
+		t.Errorf("wrong namespace: %s", ns)
+	}
+	if key != "bar" {
+		t.Errorf("wrong key: %s", key)
+	}
+
+	for _, badP := range []string{
+		"foo/bar/baz",
+		"//foo/bar/baz",
+		"/ns",
+		"ns",
+		"ns/",
+		"",
+		"//",
+		"/",
+		"////",
+	} {
+		_, _, err := splitPath(badP)
+		if err == nil {
+			t.Errorf("expected error for bad path: %s", badP)
+		}
+	}
+}
+
 func validatePk(k string, pkb []byte) error {
 	ns, k, err := splitPath(k)
 	if err != nil {
