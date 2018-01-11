@@ -12,7 +12,7 @@ type Selector map[string]SelectorFunc
 
 func (s Selector) BestRecord(k string, recs [][]byte) (int, error) {
 	if len(recs) == 0 {
-		return 0, errors.New("no records given!")
+		return 0, errors.New("no records given")
 	}
 
 	ns, _, err := splitPath(k)
