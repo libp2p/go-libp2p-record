@@ -52,6 +52,38 @@ func TestSplitPath(t *testing.T) {
 	}
 }
 
+func TestIsSigned(t *testing.T) {
+	v := Validator{}
+	v["sign"] = &ValidChecker{
+		Sign: true,
+	}
+	v["nosign"] = &ValidChecker{
+		Sign: false,
+	}
+	yes, err := v.IsSigned("/sign/a")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !yes {
+		t.Error("expected ns 'sign' to be signed")
+	}
+	yes, err = v.IsSigned("/nosign/a")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if yes {
+		t.Error("expected ns 'nosign' to not be signed")
+	}
+	_, err = v.IsSigned("/bad/a")
+	if err == nil {
+		t.Error("expected ns 'bad' to return an error")
+	}
+	_, err = v.IsSigned("bd")
+	if err == nil {
+		t.Error("expected bad ns to return an error")
+	}
+}
+
 func validatePk(k string, pkb []byte) error {
 	ns, k, err := splitPath(k)
 	if err != nil {
