@@ -2,7 +2,6 @@ package record
 
 import (
 	"errors"
-	"strings"
 )
 
 // A SelectorFunc selects the best value for the given key from
@@ -16,15 +15,14 @@ func (s Selector) BestRecord(k string, recs [][]byte) (int, error) {
 		return 0, errors.New("no records given!")
 	}
 
-	parts := strings.Split((string(k)), "/")
-	if len(parts) < 3 {
-		log.Infof("Record key does not have selectorfunc: %s", k)
-		return 0, errors.New("record key does not have selectorfunc")
+	ns, _, err := splitPath(k)
+	if err != nil {
+		return 0, err
 	}
 
-	sel, ok := s[parts[1]]
+	sel, ok := s[ns]
 	if !ok {
-		log.Infof("Unrecognized key prefix: %s", parts[1])
+		log.Infof("Unrecognized key prefix: %s", ns)
 		return 0, ErrInvalidRecordType
 	}
 
