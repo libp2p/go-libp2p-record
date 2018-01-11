@@ -127,4 +127,25 @@ func TestVerifyRecordSigned(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
+	// New Public Key
+	_, pubk2, err := ci.GenerateKeyPairWithReader(ci.RSA, 1024, u.NewSeededRand(20))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Check against wrong public key.
+	err = CheckRecordSig(r, pubk2)
+	if err == nil {
+		t.Error("signature should not validate with bad key")
+	}
+
+	// Corrupt record.
+	r.Value[0] = 1
+
+	// Check bad data against correct key
+	err = CheckRecordSig(r, pubk)
+	if err == nil {
+		t.Error("signature should not validate with bad data")
+	}
 }
