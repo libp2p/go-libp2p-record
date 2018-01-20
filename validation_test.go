@@ -5,14 +5,158 @@ import (
 	"strings"
 	"testing"
 
+	proto "github.com/gogo/protobuf/proto"
 	u "github.com/ipfs/go-ipfs-util"
 	ci "github.com/libp2p/go-libp2p-crypto"
-	peer "github.com/libp2p/go-libp2p-peer"
 )
 
 var OffensiveKey = "CAASXjBcMA0GCSqGSIb3DQEBAQUAA0sAMEgCQQDjXAQQMal4SB2tSnX6NJIPmC69/BT8A8jc7/gDUZNkEhdhYHvc7k7S4vntV/c92nJGxNdop9fKJyevuNMuXhhHAgMBAAE="
 
+var badPaths = []string{
+	"foo/bar/baz",
+	"//foo/bar/baz",
+	"/ns",
+	"ns",
+	"ns/",
+	"",
+	"//",
+	"/",
+	"////",
+}
+
+func TestSplitPath(t *testing.T) {
+	ns, key, err := splitPath("/foo/bar/baz")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if ns != "foo" {
+		t.Errorf("wrong namespace: %s", ns)
+	}
+	if key != "bar/baz" {
+		t.Errorf("wrong key: %s", key)
+	}
+
+	ns, key, err = splitPath("/foo/bar")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if ns != "foo" {
+		t.Errorf("wrong namespace: %s", ns)
+	}
+	if key != "bar" {
+		t.Errorf("wrong key: %s", key)
+	}
+
+	for _, badP := range badPaths {
+		_, _, err := splitPath(badP)
+		if err == nil {
+			t.Errorf("expected error for bad path: %s", badP)
+		}
+	}
+}
+
+func TestIsSigned(t *testing.T) {
+	v := Validator{}
+	v["sign"] = &ValidChecker{
+		Sign: true,
+	}
+	v["nosign"] = &ValidChecker{
+		Sign: false,
+	}
+	yes, err := v.IsSigned("/sign/a")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !yes {
+		t.Error("expected ns 'sign' to be signed")
+	}
+	yes, err = v.IsSigned("/nosign/a")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if yes {
+		t.Error("expected ns 'nosign' to not be signed")
+	}
+	_, err = v.IsSigned("/bad/a")
+	if err == nil {
+		t.Error("expected ns 'bad' to return an error")
+	}
+	_, err = v.IsSigned("bd")
+	if err == nil {
+		t.Error("expected bad ns to return an error")
+	}
+}
+
+func TestBadRecords(t *testing.T) {
+	v := Validator{
+		"pk": PublicKeyValidator,
+	}
+
+	sr := u.NewSeededRand(15) // generate deterministic keypair
+	sk, pubk, err := ci.GenerateKeyPairWithReader(ci.RSA, 1024, sr)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	pkb, err := pubk.Bytes()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	for _, badP := range badPaths {
+		r, err := MakePutRecord(sk, badP, pkb, true)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if v.VerifyRecord(r) == nil {
+			t.Errorf("expected error for path: %s", badP)
+		}
+	}
+
+	// Test missing namespace
+	r, err := MakePutRecord(sk, "/missing/ns", pkb, true)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if v.VerifyRecord(r) == nil {
+		t.Error("expected error for missing namespace 'missing'")
+	}
+
+	// Test valid namespace
+	pkh := u.Hash(pkb)
+	k := "/pk/" + string(pkh)
+
+	r, err = MakePutRecord(sk, k, pkb, true)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Sanity test.
+	err = v.VerifyRecord(r)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Test invalid author error path
+	r.Author = proto.String("bla")
+	err = v.VerifyRecord(r)
+	if err == nil {
+		t.Errorf("expected error due to bad author field")
+	}
+}
+
+func validatePk(k string, pkb []byte) error {
+	ns, k, err := splitPath(k)
+	if err != nil {
+		return err
+	}
+
+	r := &ValidationRecord{Namespace: ns, Key: k, Value: pkb}
+	return ValidatePublicKeyRecord(r)
+}
+
 func TestValidatePublicKey(t *testing.T) {
+
 	pkb, err := base64.StdEncoding.DecodeString(OffensiveKey)
 	if err != nil {
 		t.Fatal(err)
@@ -28,42 +172,29 @@ func TestValidatePublicKey(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	id, err := peer.IDFromPublicKey(pubk)
-	if err != nil {
-		t.Fatal(err)
-	}
-
 	pkh := u.Hash(pkb2)
 	k := "/pk/" + string(pkh)
 
 	// Good public key should pass
-	good := &ValidationRecord{k, pkb, id}
-	err = ValidatePublicKeyRecord(good)
-	if err != nil {
+	if err := validatePk(k, pkb); err != nil {
 		t.Fatal(err)
 	}
 
 	// Bad key format should fail
 	var badf = "/aa/" + string(pkh)
-	badr1 := &ValidationRecord{badf, pkb, id}
-	err = ValidatePublicKeyRecord(badr1)
-	if err == nil {
+	if err := validatePk(badf, pkb); err == nil {
 		t.Fatal("Failed to detect bad prefix")
 	}
 
 	// Bad key hash should fail
 	var badk = "/pk/" + strings.Repeat("A", len(pkh))
-	badr2 := &ValidationRecord{badk, pkb, id}
-	err = ValidatePublicKeyRecord(badr2)
-	if err == nil {
+	if err := validatePk(badk, pkb); err == nil {
 		t.Fatal("Failed to detect bad public key hash")
 	}
 
 	// Bad public key should fail
 	pkb[0] = 'A'
-	badr3 := &ValidationRecord{k, pkb, id}
-	err = ValidatePublicKeyRecord(badr3)
-	if err == nil {
+	if err := validatePk(k, pkb); err == nil {
 		t.Fatal("Failed to detect bad public key data")
 	}
 }
