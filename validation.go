@@ -8,8 +8,6 @@ import (
 
 	u "github.com/ipfs/go-ipfs-util"
 	logging "github.com/ipfs/go-log"
-	ci "github.com/libp2p/go-libp2p-crypto"
-	peer "github.com/libp2p/go-libp2p-peer"
 	pb "github.com/libp2p/go-libp2p-record/pb"
 	mh "github.com/multiformats/go-multihash"
 )
@@ -28,9 +26,6 @@ type ValidationRecord struct {
 	Namespace string
 	Key       string
 	Value     []byte
-	// Note: author is only present if the source record is signed
-	// Otherwise it will be ""
-	Author peer.ID
 }
 
 // ValidatorFunc is a function that is called to validate a given
@@ -40,12 +35,7 @@ type ValidatorFunc func(*ValidationRecord) error
 // Validator is an object that helps ensure routing records are valid.
 // It is a collection of validator functions, each of which implements
 // its own notion of validity.
-type Validator map[string]*ValidChecker
-
-type ValidChecker struct {
-	Func ValidatorFunc
-	Sign bool
-}
+type Validator map[string]ValidatorFunc
 
 func splitPath(key string) (string, string, error) {
 	if len(key) == 0 || key[0] != '/' {
@@ -68,61 +58,33 @@ func parseRecord(r *pb.Record) (*ValidationRecord, error) {
 		return nil, err
 	}
 
-	// Note that the caller is responsible for verifying the
-	// signature
-	author := peer.ID("")
-	if len(r.GetSignature()) > 0 {
-		pid, err := peer.IDFromString(r.GetAuthor())
-		if err != nil {
-			log.Warningf("Could not parse author to peer ID: %s", r.GetAuthor())
-			return nil, ErrInvalidRecordType
-		}
-		author = pid
-	}
 	return &ValidationRecord{
 		Namespace: namespace,
 		Key:       key,
 		Value:     r.GetValue(),
-		Author:    author,
 	}, nil
 }
 
 // VerifyRecord checks a record and ensures it is still valid.
 // It runs needed validators.
-// Note that VerifyRecord does not perform signature verification,
-// the signature must be verified by the caller.
+// Note that VerifyRecord does not perform signature verification.
 func (v Validator) VerifyRecord(r *pb.Record) error {
 	vr, err := parseRecord(r)
 	if err != nil {
 		return err
 	}
-	val, ok := v[vr.Namespace]
+	f, ok := v[vr.Namespace]
 	if !ok {
 		log.Infof("Unrecognized key prefix: %s", vr.Namespace)
 		return ErrInvalidRecordType
 	}
-	return val.Func(vr)
-}
-
-func (v Validator) IsSigned(k string) (bool, error) {
-	namespace, _, err := splitPath(k)
-	if err != nil {
-		return false, err
-	}
-
-	val, ok := v[namespace]
-	if !ok {
-		log.Infof("Unrecognized key prefix: %s", namespace)
-		return false, ErrInvalidRecordType
-	}
-
-	return val.Sign, nil
+	return f(vr)
 }
 
 // ValidatePublicKeyRecord implements ValidatorFunc and
 // verifies that the passed in record value is the PublicKey
 // that matches the passed in key.
-func ValidatePublicKeyRecord(r *ValidationRecord) error {
+func PublicKeyValidator(r *ValidationRecord) error {
 	if r.Namespace != "pk" {
 		return errors.New("namespace not 'pk'")
 	}
@@ -135,19 +97,6 @@ func ValidatePublicKeyRecord(r *ValidationRecord) error {
 	pkh := u.Hash(r.Value)
 	if !bytes.Equal(keyhash, pkh) {
 		return errors.New("public key does not match storage key")
-	}
-	return nil
-}
-
-var PublicKeyValidator = &ValidChecker{
-	Func: ValidatePublicKeyRecord,
-	Sign: false,
-}
-
-func CheckRecordSig(r *pb.Record, pk ci.PubKey) error {
-	blob := RecordBlobForSig(r)
-	if good, err := pk.Verify(blob, r.Signature); err != nil || !good {
-		return errors.New("invalid record signature")
 	}
 	return nil
 }
