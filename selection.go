@@ -4,12 +4,17 @@ import (
 	"errors"
 )
 
-// A SelectorFunc selects the best value for the given key from
-// a slice of possible values and returns the index of the chosen one
+// A SelectorFunc selects the best value for the given key from a slice of
+// possible values and returns the index of the chosen one.
 type SelectorFunc func(string, [][]byte) (int, error)
 
+// Selector is an object that helps select the best record out of a set of records.
+// It is a collection of selector functions, each of which implements its own
+// notion of "best".
 type Selector map[string]SelectorFunc
 
+// BestRecord selects the best value for the given key from a slice of possible
+// values and returns the index of the chosen one.
 func (s Selector) BestRecord(k string, recs [][]byte) (int, error) {
 	if len(recs) == 0 {
 		return 0, errors.New("no records given")
