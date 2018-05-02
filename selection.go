@@ -20,7 +20,7 @@ func (s Selector) BestRecord(k string, recs [][]byte) (int, error) {
 		return 0, errors.New("no records given")
 	}
 
-	ns, _, err := splitPath(k)
+	ns, _, err := SplitKey(k)
 	if err != nil {
 		return 0, err
 	}

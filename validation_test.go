@@ -24,7 +24,7 @@ var badPaths = []string{
 }
 
 func TestSplitPath(t *testing.T) {
-	ns, key, err := splitPath("/foo/bar/baz")
+	ns, key, err := SplitKey("/foo/bar/baz")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -35,7 +35,7 @@ func TestSplitPath(t *testing.T) {
 		t.Errorf("wrong key: %s", key)
 	}
 
-	ns, key, err = splitPath("/foo/bar")
+	ns, key, err = SplitKey("/foo/bar")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -47,7 +47,7 @@ func TestSplitPath(t *testing.T) {
 	}
 
 	for _, badP := range badPaths {
-		_, _, err := splitPath(badP)
+		_, _, err := SplitKey(badP)
 		if err == nil {
 			t.Errorf("expected error for bad path: %s", badP)
 		}
@@ -94,7 +94,7 @@ func TestBadRecords(t *testing.T) {
 }
 
 func validatePk(k string, pkb []byte) error {
-	ns, k, err := splitPath(k)
+	ns, k, err := SplitKey(k)
 	if err != nil {
 		return err
 	}

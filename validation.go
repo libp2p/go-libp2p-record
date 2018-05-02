@@ -37,7 +37,7 @@ type ValidatorFunc func(*ValidationRecord) error
 // its own notion of validity.
 type Validator map[string]ValidatorFunc
 
-func splitPath(key string) (string, string, error) {
+func SplitKey(key string) (string, string, error) {
 	if len(key) == 0 || key[0] != '/' {
 		return "", "", ErrInvalidRecordType
 	}
@@ -53,7 +53,7 @@ func splitPath(key string) (string, string, error) {
 }
 
 func parseRecord(r *pb.Record) (*ValidationRecord, error) {
-	namespace, key, err := splitPath(r.GetKey())
+	namespace, key, err := SplitKey(r.GetKey())
 	if err != nil {
 		return nil, err
 	}
