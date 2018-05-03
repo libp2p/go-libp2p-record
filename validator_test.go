@@ -55,8 +55,8 @@ func TestSplitPath(t *testing.T) {
 }
 
 func TestBadRecords(t *testing.T) {
-	v := Validator{
-		"pk": PublicKeyValidator,
+	v := NamespacedValidator{
+		"pk": PublicKeyValidator{},
 	}
 
 	sr := u.NewSeededRand(15) // generate deterministic keypair
@@ -71,39 +71,28 @@ func TestBadRecords(t *testing.T) {
 	}
 
 	for _, badP := range badPaths {
-		r := MakePutRecord(badP, pkb)
-		if v.VerifyRecord(r) == nil {
+		if v.Validate(badP, pkb) == nil {
 			t.Errorf("expected error for path: %s", badP)
 		}
 	}
 
 	// Test missing namespace
-	r := MakePutRecord("/missing/ns", pkb)
-	if v.VerifyRecord(r) == nil {
+	if v.Validate("/missing/ns", pkb) == nil {
 		t.Error("expected error for missing namespace 'missing'")
 	}
 
 	// Test valid namespace
 	pkh := u.Hash(pkb)
 	k := "/pk/" + string(pkh)
-	r = MakePutRecord(k, pkb)
-	err = v.VerifyRecord(r)
+	err = v.Validate(k, pkb)
 	if err != nil {
 		t.Fatal(err)
 	}
 }
 
-func validatePk(k string, pkb []byte) error {
-	ns, k, err := SplitKey(k)
-	if err != nil {
-		return err
-	}
-
-	r := &ValidationRecord{Namespace: ns, Key: k, Value: pkb}
-	return PublicKeyValidator(r)
-}
-
 func TestValidatePublicKey(t *testing.T) {
+
+	var pkv PublicKeyValidator
 
 	pkb, err := base64.StdEncoding.DecodeString(OffensiveKey)
 	if err != nil {
@@ -124,25 +113,54 @@ func TestValidatePublicKey(t *testing.T) {
 	k := "/pk/" + string(pkh)
 
 	// Good public key should pass
-	if err := validatePk(k, pkb); err != nil {
+	if err := pkv.Validate(k, pkb); err != nil {
 		t.Fatal(err)
 	}
 
 	// Bad key format should fail
 	var badf = "/aa/" + string(pkh)
-	if err := validatePk(badf, pkb); err == nil {
+	if err := pkv.Validate(badf, pkb); err == nil {
 		t.Fatal("Failed to detect bad prefix")
 	}
 
 	// Bad key hash should fail
 	var badk = "/pk/" + strings.Repeat("A", len(pkh))
-	if err := validatePk(badk, pkb); err == nil {
+	if err := pkv.Validate(badk, pkb); err == nil {
 		t.Fatal("Failed to detect bad public key hash")
 	}
 
 	// Bad public key should fail
 	pkb[0] = 'A'
-	if err := validatePk(k, pkb); err == nil {
+	if err := pkv.Validate(k, pkb); err == nil {
 		t.Fatal("Failed to detect bad public key data")
+	}
+}
+
+func TestBestRecord(t *testing.T) {
+	sel := NamespacedValidator{
+		"pk": PublicKeyValidator{},
+	}
+
+	i, err := sel.Select("/pk/thing", [][]byte{[]byte("first"), []byte("second")})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if i != 0 {
+		t.Error("expected to select first record")
+	}
+
+	_, err = sel.Select("/pk/thing", nil)
+	if err == nil {
+		t.Fatal("expected error for no records")
+	}
+
+	_, err = sel.Select("/other/thing", [][]byte{[]byte("first"), []byte("second")})
+	if err == nil {
+		t.Fatal("expected error for unregistered ns")
+	}
+
+	_, err = sel.Select("bad", [][]byte{[]byte("first"), []byte("second")})
+	if err == nil {
+		t.Fatal("expected error for bad key")
 	}
 }
