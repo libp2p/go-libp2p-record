@@ -8,10 +8,6 @@ import (
 
 var log = logging.Logger("routing/record")
 
-// ErrBadRecord is returned any time a dht record is found to be
-// incorrectly formatted or signed.
-var ErrBadRecord = errors.New("bad dht record")
-
 // ErrInvalidRecordType is returned if a DHTRecord keys prefix
 // is not found in the Validator map of the DHT.
 var ErrInvalidRecordType = errors.New("invalid record keytype")
