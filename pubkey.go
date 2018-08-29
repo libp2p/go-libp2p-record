@@ -1,7 +1,6 @@
 package record
 
 import (
-	"bytes"
 	"errors"
 	"fmt"
 
@@ -25,13 +24,13 @@ func (pkv PublicKeyValidator) Validate(key string, value []byte) error {
 		return errors.New("namespace not 'pk'")
 	}
 
-	keyhash := []byte(key)
-	if _, err := mh.Cast(keyhash); err != nil {
+	expected, err := mh.Cast([]byte(key))
+	if err != nil {
 		return fmt.Errorf("key did not contain valid multihash: %s", err)
 	}
 
 	pkh := u.Hash(value)
-	if !bytes.Equal(keyhash, pkh) {
+	if expected != pkh {
 		return errors.New("public key does not match storage key")
 	}
 	return nil
