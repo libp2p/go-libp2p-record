@@ -1,8 +1,4 @@
-// In order to re-generate the golang packages for `Record` you will need...
-// 1. Protobuf binary (tested with protoc 3.0.0). - https://github.com/gogo/protobuf/releases
-// 2. Gogo Protobuf (tested with gogo 0.3). - https://github.com/gogo/protobuf
-// Now from `libp2p/go-libp2p-record/pb` you can run...
-// `protoc --gogo_out=. record.proto`
+// See the Makefile for build instructions.
 
 syntax = "proto3";
 package record.pb;
@@ -16,12 +12,13 @@ message Record {
 	// The actual value this record is storing
 	bytes value = 2;
 
-	// Note: These fields were removed from the Record message
-	// hash of the authors public key
-	//optional string author = 3;
-	// A PKI signature for the key+value+author
-	//optional bytes signature = 4;
+	// These field numbers were used previously.
+	reserved 3 to 5;
+}
 
-	// Time the record was received, set by receiver
+message StoredRecord {
+	bytes key = 1;
+	bytes value = 2;
+	reserved 3, 4;
 	string timeReceived = 5;
 }
