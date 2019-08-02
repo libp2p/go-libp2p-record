@@ -7,9 +7,15 @@
 
 > signed records for use with routing systems
 
-## Documenation
+## Documentation
 
 See https://godoc.org/github.com/libp2p/go-libp2p-record.
+
+## Testing
+
+This package has some tests that rely on generating weak RSA keys (for speed).
+In order to successfully run the tests, one must set the environment variable,
+`LIBP2P_ALLOW_WEAK_RSA_KEYS` to any non-empty value, such as `1`.
 
 ## Contribute
 
