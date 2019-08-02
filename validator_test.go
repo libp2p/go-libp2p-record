@@ -7,6 +7,8 @@ import (
 
 	u "github.com/ipfs/go-ipfs-util"
 	ci "github.com/libp2p/go-libp2p-core/crypto"
+	"github.com/libp2p/go-libp2p-core/peer"
+	"github.com/libp2p/go-libp2p-core/test"
 )
 
 var OffensiveKey = "CAASXjBcMA0GCSqGSIb3DQEBAQUAA0sAMEgCQQDjXAQQMal4SB2tSnX6NJIPmC69/BT8A8jc7/gDUZNkEhdhYHvc7k7S4vntV/c92nJGxNdop9fKJyevuNMuXhhHAgMBAAE="
@@ -133,6 +135,27 @@ func TestValidatePublicKey(t *testing.T) {
 	pkb[0] = 'A'
 	if err := pkv.Validate(k, pkb); err == nil {
 		t.Fatal("Failed to detect bad public key data")
+	}
+}
+
+func TestValidateEd25519PublicKey(t *testing.T) {
+	var pkv PublicKeyValidator
+
+	_, pk, err := test.RandTestKeyPair(ci.Ed25519, 0)
+	if err != nil {
+		t.Fatal(err)
+	}
+	id, err := peer.IDFromPublicKey(pk)
+	pkb, err := pk.Bytes()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	k := "/pk/" + string(id)
+
+	// Good public key should pass
+	if err := pkv.Validate(k, pkb); err != nil {
+		t.Fatal(err)
 	}
 }
 
