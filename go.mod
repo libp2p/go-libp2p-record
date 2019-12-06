@@ -5,7 +5,7 @@ require (
 	github.com/ipfs/go-ipfs-util v0.0.1
 	github.com/ipfs/go-log v0.0.1
 	github.com/libp2p/go-libp2p-core v0.2.5
-	github.com/multiformats/go-multihash v0.0.9
+	github.com/multiformats/go-multihash v0.0.10
 )
 
 go 1.12
