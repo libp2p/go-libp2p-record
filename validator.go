@@ -2,6 +2,7 @@ package record
 
 import (
 	"errors"
+	"fmt"
 
 	logging "github.com/ipfs/go-log"
 )
@@ -11,6 +12,20 @@ var log = logging.Logger("routing/record")
 // ErrInvalidRecordType is returned if a DHTRecord keys prefix
 // is not found in the Validator map of the DHT.
 var ErrInvalidRecordType = errors.New("invalid record keytype")
+
+// ErrBetterRecord is returned by a subsystem when it fails because it found a
+// better record.
+type ErrBetterRecord struct {
+	// Key is the key associated with the record.
+	Key string
+	// Value is the best value that was found, according to the record's
+	// validator.
+	Value []byte
+}
+
+func (e *ErrBetterRecord) Error() string {
+	return fmt.Sprintf("found better value for %q", e.Key)
+}
 
 // Validator is an interface that should be implemented by record validators.
 type Validator interface {
