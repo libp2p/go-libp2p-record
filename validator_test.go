@@ -93,7 +93,6 @@ func TestBadRecords(t *testing.T) {
 }
 
 func TestValidatePublicKey(t *testing.T) {
-
 	var pkv PublicKeyValidator
 
 	pkb, err := base64.StdEncoding.DecodeString(OffensiveKey)
@@ -120,13 +119,13 @@ func TestValidatePublicKey(t *testing.T) {
 	}
 
 	// Bad key format should fail
-	var badf = "/aa/" + string(pkh)
+	badf := "/aa/" + string(pkh)
 	if err := pkv.Validate(badf, pkb); err == nil {
 		t.Fatal("Failed to detect bad prefix")
 	}
 
 	// Bad key hash should fail
-	var badk = "/pk/" + strings.Repeat("A", len(pkh))
+	badk := "/pk/" + strings.Repeat("A", len(pkh))
 	if err := pkv.Validate(badk, pkb); err == nil {
 		t.Fatal("Failed to detect bad public key hash")
 	}
@@ -145,7 +144,12 @@ func TestValidateEd25519PublicKey(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	id, err := peer.IDFromPublicKey(pk)
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	pkb, err := pk.Bytes()
 	if err != nil {
 		t.Fatal(err)
