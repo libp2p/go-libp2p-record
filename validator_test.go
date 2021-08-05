@@ -1,7 +1,6 @@
 package record
 
 import (
-	"encoding/base64"
 	"strings"
 	"testing"
 
@@ -10,8 +9,6 @@ import (
 	"github.com/libp2p/go-libp2p-core/peer"
 	"github.com/libp2p/go-libp2p-core/test"
 )
-
-var OffensiveKey = "CAASXjBcMA0GCSqGSIb3DQEBAQUAA0sAMEgCQQDjXAQQMal4SB2tSnX6NJIPmC69/BT8A8jc7/gDUZNkEhdhYHvc7k7S4vntV/c92nJGxNdop9fKJyevuNMuXhhHAgMBAAE="
 
 var badPaths = []string{
 	"foo/bar/baz",
@@ -62,7 +59,7 @@ func TestBadRecords(t *testing.T) {
 	}
 
 	sr := u.NewSeededRand(15) // generate deterministic keypair
-	_, pubk, err := ci.GenerateKeyPairWithReader(ci.RSA, 1024, sr)
+	_, pubk, err := ci.GenerateKeyPairWithReader(ci.RSA, 2048, sr)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -95,12 +92,12 @@ func TestBadRecords(t *testing.T) {
 func TestValidatePublicKey(t *testing.T) {
 	var pkv PublicKeyValidator
 
-	pkb, err := base64.StdEncoding.DecodeString(OffensiveKey)
+	sr := u.NewSeededRand(16) // generate deterministic keypair
+	_, pubk, err := ci.GenerateKeyPairWithReader(ci.RSA, 2048, sr)
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	pubk, err := ci.UnmarshalPublicKey(pkb)
+	pkb, err := pubk.Bytes()
 	if err != nil {
 		t.Fatal(err)
 	}
