@@ -5,9 +5,9 @@ import (
 	"testing"
 
 	u "github.com/ipfs/go-ipfs-util"
-	ci "github.com/libp2p/go-libp2p-core/crypto"
-	"github.com/libp2p/go-libp2p-core/peer"
-	"github.com/libp2p/go-libp2p-core/test"
+	ci "github.com/libp2p/go-libp2p/core/crypto"
+	"github.com/libp2p/go-libp2p/core/peer"
+	"github.com/libp2p/go-libp2p/core/test"
 )
 
 var badPaths = []string{
@@ -64,7 +64,7 @@ func TestBadRecords(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	pkb, err := pubk.Bytes()
+	pkb, err := ci.MarshalPublicKey(pubk)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -97,12 +97,12 @@ func TestValidatePublicKey(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	pkb, err := pubk.Bytes()
+	pkb, err := ci.MarshalPublicKey(pubk)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	pkb2, err := pubk.Bytes()
+	pkb2, err := ci.MarshalPublicKey(pubk)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -147,7 +147,7 @@ func TestValidateEd25519PublicKey(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	pkb, err := pk.Bytes()
+	pkb, err := ci.MarshalPublicKey(pk)
 	if err != nil {
 		t.Fatal(err)
 	}
