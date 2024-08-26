@@ -1,11 +1,10 @@
-PB = $(wildcard *.proto)
-GO = $(PB:.proto=.pb.go)
+all: clean build
 
-all: $(GO)
-
-%.pb.go: %.proto
-		protoc --proto_path=$(GOPATH)/src:. --gogofast_out=. $<
+build:
+	protoc --proto_path=. --go_out=. --go_opt=paths=source_relative ./record.proto
 
 clean:
-		rm -f *.pb.go
-		rm -f *.go
+	rm -f *.pb.go
+	rm -f *.go
+
+.PHONY: all build clean
