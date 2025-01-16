@@ -1,7 +1,7 @@
 module github.com/libp2p/go-libp2p-record
 
 require (
-	github.com/ipfs/boxo v0.22.0
+	github.com/ipfs/boxo v0.26.0
 	github.com/ipfs/go-test v0.0.4
 	github.com/libp2p/go-libp2p v0.38.1
 	github.com/multiformats/go-multihash v0.2.3
@@ -31,5 +31,3 @@ require (
 )
 
 go 1.22.0
-
-toolchain go1.23.4
