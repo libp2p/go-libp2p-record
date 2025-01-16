@@ -1,7 +1,8 @@
+//go:generate protoc -I=pb --go_out=paths=source_relative:pb pb/record.proto
 package record
 
 import (
-	pb "github.com/libp2p/go-libp2p-record/pb"
+	"github.com/libp2p/go-libp2p-record/pb"
 )
 
 // MakePutRecord creates a dht record for the given key/value pair

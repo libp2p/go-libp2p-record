@@ -1,7 +1,6 @@
 syntax = "proto3";
-package record.pb;
 
-option go_package = "github.com/libp2p/go-libp2p-record/record_pb";
+option go_package = "github.com/libp2p/go-libp2p-record/pb";
 
 // Record represents a dht record that contains a value
 // for a key value pair
