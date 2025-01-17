@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.3
 // 	protoc        v5.29.2
-// source: record.proto
+// source: github.com/libp2p/go-libp2p-record/pb/record.proto
 
 package pb
 
@@ -36,7 +36,7 @@ type Record struct {
 
 func (x *Record) Reset() {
 	*x = Record{}
-	mi := &file_record_proto_msgTypes[0]
+	mi := &file_github_com_libp2p_go_libp2p_record_pb_record_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -48,7 +48,7 @@ func (x *Record) String() string {
 func (*Record) ProtoMessage() {}
 
 func (x *Record) ProtoReflect() protoreflect.Message {
-	mi := &file_record_proto_msgTypes[0]
+	mi := &file_github_com_libp2p_go_libp2p_record_pb_record_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -61,7 +61,7 @@ func (x *Record) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Record.ProtoReflect.Descriptor instead.
 func (*Record) Descriptor() ([]byte, []int) {
-	return file_record_proto_rawDescGZIP(), []int{0}
+	return file_github_com_libp2p_go_libp2p_record_pb_record_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *Record) GetKey() []byte {
@@ -85,38 +85,40 @@ func (x *Record) GetTimeReceived() string {
 	return ""
 }
 
-var File_record_proto protoreflect.FileDescriptor
+var File_github_com_libp2p_go_libp2p_record_pb_record_proto protoreflect.FileDescriptor
 
-var file_record_proto_rawDesc = []byte{
-	0x0a, 0x0c, 0x72, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x54,
-	0x0a, 0x06, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x12, 0x10, 0x0a, 0x03, 0x6b, 0x65, 0x79, 0x18,
-	0x01, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x03, 0x6b, 0x65, 0x79, 0x12, 0x14, 0x0a, 0x05, 0x76, 0x61,
-	0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65,
-	0x12, 0x22, 0x0a, 0x0c, 0x74, 0x69, 0x6d, 0x65, 0x52, 0x65, 0x63, 0x65, 0x69, 0x76, 0x65, 0x64,
-	0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c, 0x74, 0x69, 0x6d, 0x65, 0x52, 0x65, 0x63, 0x65,
-	0x69, 0x76, 0x65, 0x64, 0x42, 0x27, 0x5a, 0x25, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63,
-	0x6f, 0x6d, 0x2f, 0x6c, 0x69, 0x62, 0x70, 0x32, 0x70, 0x2f, 0x67, 0x6f, 0x2d, 0x6c, 0x69, 0x62,
-	0x70, 0x32, 0x70, 0x2d, 0x72, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x2f, 0x70, 0x62, 0x62, 0x06, 0x70,
-	0x72, 0x6f, 0x74, 0x6f, 0x33,
+var file_github_com_libp2p_go_libp2p_record_pb_record_proto_rawDesc = []byte{
+	0x0a, 0x32, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x6c, 0x69, 0x62,
+	0x70, 0x32, 0x70, 0x2f, 0x67, 0x6f, 0x2d, 0x6c, 0x69, 0x62, 0x70, 0x32, 0x70, 0x2d, 0x72, 0x65,
+	0x63, 0x6f, 0x72, 0x64, 0x2f, 0x70, 0x62, 0x2f, 0x72, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x2e, 0x70,
+	0x72, 0x6f, 0x74, 0x6f, 0x22, 0x54, 0x0a, 0x06, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x12, 0x10,
+	0x0a, 0x03, 0x6b, 0x65, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x03, 0x6b, 0x65, 0x79,
+	0x12, 0x14, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0c, 0x52,
+	0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x12, 0x22, 0x0a, 0x0c, 0x74, 0x69, 0x6d, 0x65, 0x52, 0x65,
+	0x63, 0x65, 0x69, 0x76, 0x65, 0x64, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c, 0x74, 0x69,
+	0x6d, 0x65, 0x52, 0x65, 0x63, 0x65, 0x69, 0x76, 0x65, 0x64, 0x42, 0x27, 0x5a, 0x25, 0x67, 0x69,
+	0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x6c, 0x69, 0x62, 0x70, 0x32, 0x70, 0x2f,
+	0x67, 0x6f, 0x2d, 0x6c, 0x69, 0x62, 0x70, 0x32, 0x70, 0x2d, 0x72, 0x65, 0x63, 0x6f, 0x72, 0x64,
+	0x2f, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
-	file_record_proto_rawDescOnce sync.Once
-	file_record_proto_rawDescData = file_record_proto_rawDesc
+	file_github_com_libp2p_go_libp2p_record_pb_record_proto_rawDescOnce sync.Once
+	file_github_com_libp2p_go_libp2p_record_pb_record_proto_rawDescData = file_github_com_libp2p_go_libp2p_record_pb_record_proto_rawDesc
 )
 
-func file_record_proto_rawDescGZIP() []byte {
-	file_record_proto_rawDescOnce.Do(func() {
-		file_record_proto_rawDescData = protoimpl.X.CompressGZIP(file_record_proto_rawDescData)
+func file_github_com_libp2p_go_libp2p_record_pb_record_proto_rawDescGZIP() []byte {
+	file_github_com_libp2p_go_libp2p_record_pb_record_proto_rawDescOnce.Do(func() {
+		file_github_com_libp2p_go_libp2p_record_pb_record_proto_rawDescData = protoimpl.X.CompressGZIP(file_github_com_libp2p_go_libp2p_record_pb_record_proto_rawDescData)
 	})
-	return file_record_proto_rawDescData
+	return file_github_com_libp2p_go_libp2p_record_pb_record_proto_rawDescData
 }
 
-var file_record_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
-var file_record_proto_goTypes = []any{
+var file_github_com_libp2p_go_libp2p_record_pb_record_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
+var file_github_com_libp2p_go_libp2p_record_pb_record_proto_goTypes = []any{
 	(*Record)(nil), // 0: Record
 }
-var file_record_proto_depIdxs = []int32{
+var file_github_com_libp2p_go_libp2p_record_pb_record_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for method output_type
 	0, // [0:0] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
@@ -124,27 +126,27 @@ var file_record_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for field type_name
 }
 
-func init() { file_record_proto_init() }
-func file_record_proto_init() {
-	if File_record_proto != nil {
+func init() { file_github_com_libp2p_go_libp2p_record_pb_record_proto_init() }
+func file_github_com_libp2p_go_libp2p_record_pb_record_proto_init() {
+	if File_github_com_libp2p_go_libp2p_record_pb_record_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: file_record_proto_rawDesc,
+			RawDescriptor: file_github_com_libp2p_go_libp2p_record_pb_record_proto_rawDesc,
 			NumEnums:      0,
 			NumMessages:   1,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_record_proto_goTypes,
-		DependencyIndexes: file_record_proto_depIdxs,
-		MessageInfos:      file_record_proto_msgTypes,
+		GoTypes:           file_github_com_libp2p_go_libp2p_record_pb_record_proto_goTypes,
+		DependencyIndexes: file_github_com_libp2p_go_libp2p_record_pb_record_proto_depIdxs,
+		MessageInfos:      file_github_com_libp2p_go_libp2p_record_pb_record_proto_msgTypes,
 	}.Build()
-	File_record_proto = out.File
-	file_record_proto_rawDesc = nil
-	file_record_proto_goTypes = nil
-	file_record_proto_depIdxs = nil
+	File_github_com_libp2p_go_libp2p_record_pb_record_proto = out.File
+	file_github_com_libp2p_go_libp2p_record_pb_record_proto_rawDesc = nil
+	file_github_com_libp2p_go_libp2p_record_pb_record_proto_goTypes = nil
+	file_github_com_libp2p_go_libp2p_record_pb_record_proto_depIdxs = nil
 }
