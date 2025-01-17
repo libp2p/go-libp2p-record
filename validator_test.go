@@ -4,7 +4,8 @@ import (
 	"strings"
 	"testing"
 
-	u "github.com/ipfs/go-ipfs-util"
+	u "github.com/ipfs/boxo/util"
+	"github.com/ipfs/go-test/random"
 	ci "github.com/libp2p/go-libp2p/core/crypto"
 	"github.com/libp2p/go-libp2p/core/peer"
 	"github.com/libp2p/go-libp2p/core/test"
@@ -58,7 +59,7 @@ func TestBadRecords(t *testing.T) {
 		"pk": PublicKeyValidator{},
 	}
 
-	sr := u.NewSeededRand(15) // generate deterministic keypair
+	sr := random.NewSeededRand(15) // generate deterministic keypair
 	_, pubk, err := ci.GenerateKeyPairWithReader(ci.RSA, 2048, sr)
 	if err != nil {
 		t.Fatal(err)
@@ -92,7 +93,7 @@ func TestBadRecords(t *testing.T) {
 func TestValidatePublicKey(t *testing.T) {
 	var pkv PublicKeyValidator
 
-	sr := u.NewSeededRand(16) // generate deterministic keypair
+	sr := random.NewSeededRand(16) // generate deterministic keypair
 	_, pubk, err := ci.GenerateKeyPairWithReader(ci.RSA, 2048, sr)
 	if err != nil {
 		t.Fatal(err)
