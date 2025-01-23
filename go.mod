@@ -1,9 +1,8 @@
 module github.com/libp2p/go-libp2p-record
 
 require (
-	github.com/ipfs/boxo v0.26.0
 	github.com/ipfs/go-test v0.0.4
-	github.com/libp2p/go-libp2p v0.38.1
+	github.com/libp2p/go-libp2p v0.38.2
 	github.com/multiformats/go-multihash v0.2.3
 	google.golang.org/protobuf v1.36.3
 )
@@ -11,7 +10,7 @@ require (
 require (
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.3.0 // indirect
 	github.com/ipfs/go-block-format v0.2.0 // indirect
-	github.com/ipfs/go-cid v0.4.1 // indirect
+	github.com/ipfs/go-cid v0.5.0 // indirect
 	github.com/ipfs/go-ipfs-util v0.0.3 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.9 // indirect
 	github.com/libp2p/go-buffer-pool v0.1.0 // indirect
