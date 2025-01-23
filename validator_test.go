@@ -4,11 +4,11 @@ import (
 	"strings"
 	"testing"
 
-	u "github.com/ipfs/boxo/util"
 	"github.com/ipfs/go-test/random"
 	ci "github.com/libp2p/go-libp2p/core/crypto"
 	"github.com/libp2p/go-libp2p/core/peer"
 	"github.com/libp2p/go-libp2p/core/test"
+	mh "github.com/multiformats/go-multihash"
 )
 
 var badPaths = []string{
@@ -82,7 +82,10 @@ func TestBadRecords(t *testing.T) {
 	}
 
 	// Test valid namespace
-	pkh := u.Hash(pkb)
+	pkh, err := mh.Sum(pkb, mh.SHA2_256, -1)
+	if err != nil {
+		t.Fatal(err)
+	}
 	k := "/pk/" + string(pkh)
 	err = v.Validate(k, pkb)
 	if err != nil {
@@ -108,7 +111,10 @@ func TestValidatePublicKey(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	pkh := u.Hash(pkb2)
+	pkh, err := mh.Sum(pkb2, mh.SHA2_256, -1)
+	if err != nil {
+		t.Fatal(err)
+	}
 	k := "/pk/" + string(pkh)
 
 	// Good public key should pass
