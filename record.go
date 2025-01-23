@@ -1,4 +1,3 @@
-//go:generate protoc -I=pb --go_out=paths=source_relative:pb pb/record.proto
 package record
 
 import (
